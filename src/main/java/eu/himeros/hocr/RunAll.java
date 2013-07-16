@@ -21,6 +21,7 @@ package eu.himeros.hocr;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -57,10 +58,28 @@ public class RunAll {
     }
 
     public static void main(String[] args) throws Exception {
-        XmlWordListExtractor.main(new String[]{"/usr/local/hocrinfoaggregator/test/demetrius/demetrius-de_elocutione-u.xml","/usr/local/hocrinfoaggregator/test/demetrius/demetrius-de_elocutione.ngt.csv"});
-        FlatXml.main(new String[]{"/usr/local/hocrinfoaggregator/test/demetrius/Demetrius-De_elocutione.book"});
-        NgtMaker.main(new String[]{"/usr/local/hocrinfoaggregator/test/demetrius/demetrius-de_elocutione.ngt.csv","/usr/local/hocrinfoaggregator/test/demetrius/Demetrius-De_elocutione.book"});
-        RunAll ra = new RunAll();
-        ra.run(new File("/usr/local/hocrinfoaggregator/test/demetrius/Demetrius-De_elocutione.book"));
+    	
+    	 try {
+
+             File dir = new File(args[0]);
+             if (!dir.isDirectory()) throw new Exception();
+             File[] files = dir.listFiles();
+             HashMap<String,String> filenames = new HashMap<>();
+             for (File f : files) {
+            	 String filename = f.getAbsolutePath();
+            	 String[] extension = filename.split("\\.");
+            	 filenames.put(extension[extension.length-1], filename);
+             }
+             
+             XmlWordListExtractor.main(new String[]{filenames.get("xml"),filenames.get("csv")});
+             FlatXml.main(new String[]{filenames.get("book")});
+             NgtMaker.main(new String[]{filenames.get("csv"),filenames.get("book")});
+             RunAll ra = new RunAll();
+             ra.run(new File(filenames.get("book")));
+
+         } catch (Exception e) {
+        	 System.err.println(e.toString());
+         }
+    	
     }
 }

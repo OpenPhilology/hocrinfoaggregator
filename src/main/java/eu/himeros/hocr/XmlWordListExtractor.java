@@ -58,6 +58,7 @@ public class XmlWordListExtractor {
     }
     
     public static void main(String[] args) throws Exception{
+    	System.setProperty("javax.xml.parsers.SAXParserFactory", "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
         XmlWordListExtractor xwle=new XmlWordListExtractor(args[0],args[1]);
         
     }
