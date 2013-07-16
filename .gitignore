@@ -4,3 +4,13 @@
 *.jar
 *.war
 *.ear
+
+/target/resolution-cache/
+/target/scala-2.10/
+/target/streams/
+/.cache
+/.classpath
+/.gitignore
+/.project
+/.settings/
+/project/target/
