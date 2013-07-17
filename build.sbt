@@ -6,6 +6,8 @@ version := "1.0"
 
 scalaVersion := "2.10.0"
 
+mainClass := Some("eu.himeros.hocr.RunAll")
+
 libraryDependencies ++= Seq(
     "junit" % "junit" % "3.8.1" % "test",
     "org.apache.lucene" % "lucene-spellchecker" % "3.6.1",
