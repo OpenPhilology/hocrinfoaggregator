@@ -36,7 +36,6 @@ public class RunAll {
     }
 
     public void run(File dir) throws Exception {
-        if(System.getProperty("grc.lucene.spellchecker")==null)System.setProperty("grc.lucene.spellchecker","/usr/local/hocrinfoaggregator/test/lucene/lucene-grc");
         hocrInfoAggregator = new HocrInfoAggregator();
         List<File> listFiles=Arrays.asList(dir.listFiles());
         Collections.sort(listFiles);
@@ -59,6 +58,8 @@ public class RunAll {
 
     public static void main(String[] args) throws Exception {
     	
+        if(System.getProperty("grc.lucene.spellchecker")==null)System.setProperty("grc.lucene.spellchecker","src/main/resources/lucene-grc");
+
     	 try {
 
              File dir = new File(args[0]);
