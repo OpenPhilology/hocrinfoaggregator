@@ -31,6 +31,7 @@ import java.util.List;
 public class RunAll {
 
     HocrInfoAggregator hocrInfoAggregator;
+    public static String configpath = "";
 
     public RunAll() {
     }
@@ -57,12 +58,15 @@ public class RunAll {
     }
 
     public static void main(String[] args) throws Exception {
-    	
-        if(System.getProperty("grc.lucene.spellchecker")==null)System.setProperty("grc.lucene.spellchecker","src/main/resources/lucene-grc");
+        
+        configpath = args[0];
+        if (!configpath.endsWith("/")) configpath = configpath + "/";
 
+        if(System.getProperty("grc.lucene.spellchecker")==null)System.setProperty("grc.lucene.spellchecker",configpath+"lucene-grc/");
+        
     	 try {
 
-             File dir = new File(args[0]);
+             File dir = new File(args[1]);
              if (!dir.isDirectory()) throw new Exception();
              File[] files = dir.listFiles();
              HashMap<String,String> filenames = new HashMap<>();

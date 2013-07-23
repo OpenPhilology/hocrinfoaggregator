@@ -20,6 +20,8 @@ package eu.himeros.alignment;
 import eu.himeros.transcoder.Transcoder;
 import java.io.File;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import eu.himeros.hocr.RunAll;
 
 /**
  * Similarity Evaluator that scores 0.5 if characters have the same upper case representation.
@@ -38,11 +40,16 @@ public class UpperCaseSimEvaluator extends SimEvaluator{
      * Default Constructor.
      */
     public UpperCaseSimEvaluator(){
-        if(resourceName!=null&&(new File(resourceName)).exists()){  //if the resource is a file with a canonical path
-            trans=new Transcoder(resourceName);
-        }else if(resourceName!=null){ //if the resource is contained in the .jar
-            trans=new Transcoder(ClassLoader.getSystemResourceAsStream(resourceName));
+        try {
+            if(resourceName!=null&&(new File(resourceName)).exists()){  //if the resource is a file with a canonical path
+                trans=new Transcoder(resourceName);
+            }else if(resourceName!=null){ //if the resource is contained in the .jar
+                trans=new Transcoder(new FileInputStream(RunAll.configpath+resourceName));
+            }
+        } catch (Exception e) {
+
         }
+
     }
 
     /**
@@ -85,10 +92,14 @@ public class UpperCaseSimEvaluator extends SimEvaluator{
     
     public static void setResourceName(String resourceName){
         UpperCaseSimEvaluator.resourceName=resourceName;
-                if((new File(resourceName)).exists()){  //if the resource is a file with a canonical path
-            trans=new Transcoder(resourceName);
-        }else{ //if the resource is contained in the .jar
-            trans=new Transcoder(ClassLoader.getSystemResourceAsStream(resourceName));
+        try {
+            if((new File(resourceName)).exists()){  //if the resource is a file with a canonical path
+                trans=new Transcoder(resourceName);
+            }else{ //if the resource is contained in the .jar
+                trans=new Transcoder(new FileInputStream(RunAll.configpath+resourceName));
+            }
+        } catch (Exception e) {
+
         }
     }
     

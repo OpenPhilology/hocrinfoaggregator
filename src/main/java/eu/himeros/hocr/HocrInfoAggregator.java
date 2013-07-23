@@ -104,21 +104,21 @@ public class HocrInfoAggregator {
     }
 
     private void init() throws IOException, ClassNotFoundException {
-        UpperCaseSimEvaluator.setResourceName("eu/himeros/resources/transcoders/low2up.txt");
+        UpperCaseSimEvaluator.setResourceName(RunAll.configpath+"eu/himeros/resources/transcoders/low2up.txt");
         HashMap<String,String> langSpellcheckerMap=new HashMap<>();
         langSpellcheckerMap.put("grc",System.getProperty("grc.lucene.spellchecker"));
         LuceneSpellChecker.init(langSpellcheckerMap);
-        low2upL1Trans.setTranscoder(ClassLoader.getSystemResourceAsStream("eu/himeros/resources/transcoders/low2up.txt"));
-        up2lowL1Trans.setTranscoder(ClassLoader.getSystemResourceAsStream("eu/himeros/resources/transcoders/low2up.txt"));
+        low2upL1Trans.setTranscoder(new FileInputStream(RunAll.configpath+"eu/himeros/resources/transcoders/low2up.txt"));
+        up2lowL1Trans.setTranscoder(new FileInputStream(RunAll.configpath+"eu/himeros/resources/transcoders/low2up.txt"));
         up2lowL1Trans.reverse();
         l1HyphenTree = Hyphenator.getFopHyphenationTree("el_EL");
-        ObjectInputStream in = new ObjectInputStream(ClassLoader.getSystemResourceAsStream("eu/himeros/resources/sers/grchs.ser"));
+        ObjectInputStream in = new ObjectInputStream(new FileInputStream(RunAll.configpath+"eu/himeros/resources/sers/grchs.ser"));
         l1Hs = (HashSet) in.readObject();
         in.close();
-        in = new ObjectInputStream(ClassLoader.getSystemResourceAsStream("eu/himeros/resources/sers/up2low-greek.ser"));
+        in = new ObjectInputStream(new FileInputStream(RunAll.configpath+"eu/himeros/resources/sers/up2low-greek.ser"));
         upL1Hm = (HashMap) in.readObject();
         in.close();
-        in = new ObjectInputStream(ClassLoader.getSystemResourceAsStream("eu/himeros/resources/sers/syllhs.ser"));
+        in = new ObjectInputStream(new FileInputStream(RunAll.configpath+"eu/himeros/resources/sers/syllhs.ser"));
         syllHs = (HashSet) in.readObject();
         in.close();
     }

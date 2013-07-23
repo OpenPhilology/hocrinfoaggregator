@@ -21,6 +21,8 @@ package eu.himeros.text;
 
 import com.ibm.icu.text.Normalizer2;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import eu.himeros.hocr.RunAll;
 
 /**
  * Normalize Greek strings according to the icu directions but uses polytonic
@@ -36,8 +38,12 @@ public class GrcNormalizer {
      * Constructor
      */
     public GrcNormalizer(){
-        is=ClassLoader.getSystemResourceAsStream("eu/himeros/resources/nrm/grc2nfcbe.nrm");
-        normalizer2=Normalizer2.getInstance(is,"nfc", Normalizer2.Mode.COMPOSE);
+        try {
+            is=new FileInputStream(RunAll.configpath+"eu/himeros/resources/nrm/grc2nfcbe.nrm");
+            normalizer2=Normalizer2.getInstance(is,"nfc", Normalizer2.Mode.COMPOSE);   
+        } catch (Exception e) {
+
+        }
     }
     
     /**

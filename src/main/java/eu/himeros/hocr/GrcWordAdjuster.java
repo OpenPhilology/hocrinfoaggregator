@@ -19,6 +19,7 @@
 package eu.himeros.hocr;
 
 import eu.himeros.transcoder.Transcoder;
+import java.io.FileInputStream;
 
 /**
  *
@@ -29,9 +30,12 @@ public class GrcWordAdjuster implements WordAdjuster {
     Transcoder ocr2u=new Transcoder();
     
     public GrcWordAdjuster(){
-         monotonic2polytonic.setTranscoder(ClassLoader.getSystemResourceAsStream("eu/himeros/resources/transcoders/monotonic2polytonic.txt"));
-         ocr2u.setTranscoder(ClassLoader.getSystemResourceAsStream("eu/himeros/resources/transcoders/ocr2u.txt"));
-        
+        try {
+            monotonic2polytonic.setTranscoder(new FileInputStream(RunAll.configpath+"eu/himeros/resources/transcoders/monotonic2polytonic.txt"));
+            ocr2u.setTranscoder(new FileInputStream(RunAll.configpath+"eu/himeros/resources/transcoders/ocr2u.txt"));
+        } catch (Exception e) {
+
+        }
     }
 
     @Override

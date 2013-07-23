@@ -19,6 +19,7 @@
 package eu.himeros.digitaledition;
 
 import eu.himeros.transcoder.Transcoder;
+import eu.himeros.hocr.RunAll;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
@@ -29,6 +30,7 @@ import org.jdom2.Text;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import java.io.FileInputStream;
 
 /**
  *
@@ -61,8 +63,8 @@ public class AlignedQuotationParser {
         this.defaultLang=defaultLang;
         occHm=new HashMap<>(2048);
         langStack = new Stack<>();
-        betaTrans = new Transcoder(this.getClass().getResourceAsStream("/eu/himeros/resources/transcoders/beta2u.txt"));
-        upperTrans=new Transcoder(this.getClass().getResourceAsStream("/eu/himeros/resources/transcoders/low2up.txt"));
+        betaTrans = new Transcoder(new FileInputStream(RunAll.configpath + "eu/himeros/resources/transcoders/beta2u.txt"));
+        upperTrans=new Transcoder(new FileInputStream(RunAll.configpath + "eu/himeros/resources/transcoders/low2up.txt"));
         langStack.push(defaultLang);
         rootOut=new Element("text");
     }

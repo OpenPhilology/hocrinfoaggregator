@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.FileInputStream;
 
 /**
  *
@@ -44,9 +45,13 @@ public class GreekSuggestionInContextFilter extends SuggestionInContextFilter {
     private Pattern p=Pattern.compile("([^\u0300-\u03FF\u1F00-\u1FFF]*)([\u0300-\u03FF\u1F00-\u1FFF]+)([^\u0300-\u03FF\u1F00-\u1FFF]*.?.?)");
     
     public GreekSuggestionInContextFilter(){
-        trans=new Transcoder();
-        trans.setTranscoder(this.getClass().getResourceAsStream("/eu/himeros/resources/transcoders/lowercase2uppercase.txt"));
-        trans.reverse();
+        try {
+            trans=new Transcoder();
+            trans.setTranscoder(new FileInputStream(RunAll.configpath + "eu/himeros/transcoders/lowercase2uppercase.txt"));
+            trans.reverse();
+        } catch (Exception e) {
+
+        }
     }
     
     public boolean isCapitalRequired() {

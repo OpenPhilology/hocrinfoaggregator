@@ -59,7 +59,7 @@ public class NgtMaker {
 
     private void init(File ngtName) throws Exception {
         br = new BufferedReader(new FileReader(ngtName));
-        trans = new Transcoder(ClassLoader.getSystemResourceAsStream("eu/himeros/resources/transcoders/low2up.txt"));
+        trans = new Transcoder(new FileInputStream(RunAll.configpath+"eu/himeros/resources/transcoders/low2up.txt"));
         ngtTm = new TreeMap<>();
         ngtAl = new ArrayList<>(300000);
         prolog=new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
