@@ -15,7 +15,10 @@ libraryDependencies ++= Seq(
     "com.ibm.icu" % "icu4j" % "49.1",
     "org.jdom" % "jdom" % "2.0.2",
     "jaxen" % "jaxen" % "1.1.3"
-).map(_.excludeAll(ExclusionRule( organization = "maven-plugins" )))
+).map(_.excludeAll(
+	ExclusionRule( organization = "maven-plugins" ),
+	ExclusionRule( organization = "xerces" )
+))
 
 resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
