@@ -46,7 +46,11 @@ public class RunAll {
                     System.out.println(file.getAbsolutePath());
                     hocrInfoAggregator.initFile(file.getAbsolutePath());
                     hocrInfoAggregator.parse();
-                    hocrInfoAggregator.alignToGroundTruth();
+                    try {
+                    	hocrInfoAggregator.alignToGroundTruth();
+                    } catch (Exception e) {
+                    	// solving problems by ignoring them
+                    }
                     //hocrInfoAggregator.output(file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 5) + "-out.html");
                     hocrInfoAggregator.output(file.getAbsolutePath().replaceAll("/o(....)\\.1\\.html", "/p$1\\.html"));
                 }
@@ -82,9 +86,13 @@ public class RunAll {
             	 filenames.put(extension[extension.length-1], filename);
              }
              
+             try {
              FlatXml.main(new String[]{filenames.get("book")});
              XmlWordListExtractor.main(new String[]{filenames.get("xml"),filenames.get("xml").replaceAll("\\.xml", "\\.ngt\\.csv")});
              NgtMaker.main(new String[]{filenames.get("csv"),filenames.get("book")});
+             } catch (Exception e) {
+            	 // solving problems by ignoring them
+             }
              RunAll ra = new RunAll();
              ra.run(new File(filenames.get("book")));
 

@@ -111,7 +111,7 @@ public class HocrInfoAggregator {
         low2upL1Trans.setTranscoder(new FileInputStream(RunAll.configpath+"eu/himeros/resources/transcoders/low2up.txt"));
         up2lowL1Trans.setTranscoder(new FileInputStream(RunAll.configpath+"eu/himeros/resources/transcoders/low2up.txt"));
         up2lowL1Trans.reverse();
-        l1HyphenTree = Hyphenator.getFopHyphenationTree("el_EL");
+        l1HyphenTree = Hyphenator.getFopHyphenationTree("el_GR");
         ObjectInputStream in = new ObjectInputStream(new FileInputStream(RunAll.configpath+"eu/himeros/resources/sers/grchs.ser"));
         l1Hs = (HashSet) in.readObject();
         in.close();
@@ -130,8 +130,12 @@ public class HocrInfoAggregator {
         xmlns = root.getNamespace();
         l1Fm = new GreekContextFilterMananger(); //TODO: generalize
         aqp = new AlignedQuotationParser();
+        try {
         nearGt = aqp.parse(inFileName.substring(0, inFileName.length() - 5) + ".ngt.xml"); //TODO : generalize
         makeNearGtHm();
+        } catch (Exception e) {
+        	// solving problems by ignoring them
+        }
     }
 
     private void makeNearGtHm() {
@@ -245,6 +249,7 @@ public class HocrInfoAggregator {
 
     private boolean testSyllSeq(String str) {
         boolean res = false;
+    	try {
         Hyphenation hp = l1HyphenTree.hyphenate(str, 0, 0);
         int beg = 0;
         int end = str.length();
@@ -279,6 +284,9 @@ public class HocrInfoAggregator {
             } else {
                 return false;
             }
+        }
+    	} catch (Exception e) {
+        	// solving problems by ignoring them
         }
         return res;
     }
