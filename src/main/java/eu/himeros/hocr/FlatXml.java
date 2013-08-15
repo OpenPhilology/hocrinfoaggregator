@@ -94,7 +94,7 @@ public class FlatXml {
         for(File file:dir.listFiles()){
             try{
                 if(!file.getName().endsWith(".html")) continue;
-                FlatXml fx=new FlatXml(file, new File(file.getAbsolutePath().replace("\\.html$",".1.html")));
+                FlatXml fx=new FlatXml(file, new File(file.getAbsolutePath().replaceAll("html$","1.html")));
             }catch(Exception ex){
                 ex.printStackTrace(System.err);
                 System.err.println(file.getName());

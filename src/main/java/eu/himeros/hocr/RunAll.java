@@ -42,13 +42,13 @@ public class RunAll {
         Collections.sort(listFiles);
         for (File file : listFiles) {
             try {
-                if (file.getName().endsWith(".html") && !file.getName().endsWith(".ngt.html")) {
+                if (file.getName().endsWith(".1.html") && !file.getName().endsWith(".ngt.html")) {
                     System.out.println(file.getAbsolutePath());
                     hocrInfoAggregator.initFile(file.getAbsolutePath());
                     hocrInfoAggregator.parse();
                     hocrInfoAggregator.alignToGroundTruth();
                     //hocrInfoAggregator.output(file.getAbsolutePath().substring(0, file.getAbsolutePath().length() - 5) + "-out.html");
-                    hocrInfoAggregator.output(file.getAbsolutePath());
+                    hocrInfoAggregator.output(file.getAbsolutePath().replaceAll("/o(....)\\.1\\.html", "/p$1\\.html"));
                 }
             } catch (Exception ex) {
                 System.err.println("ERROR: " + file.getName());
@@ -57,6 +57,12 @@ public class RunAll {
         }
     }
 
+    /**
+     * 
+     * @param args [0]: Path to assets, [1]: Path to .book/csv/xml
+     * @throws Exception
+     */
+    
     public static void main(String[] args) throws Exception {
         
         configpath = args[0];
@@ -76,8 +82,8 @@ public class RunAll {
             	 filenames.put(extension[extension.length-1], filename);
              }
              
-             XmlWordListExtractor.main(new String[]{filenames.get("xml"),filenames.get("csv")});
              FlatXml.main(new String[]{filenames.get("book")});
+             XmlWordListExtractor.main(new String[]{filenames.get("xml"),filenames.get("xml").replaceAll("\\.xml", "\\.ngt\\.csv")});
              NgtMaker.main(new String[]{filenames.get("csv"),filenames.get("book")});
              RunAll ra = new RunAll();
              ra.run(new File(filenames.get("book")));

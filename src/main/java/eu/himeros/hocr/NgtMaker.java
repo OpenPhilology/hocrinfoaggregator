@@ -59,13 +59,13 @@ public class NgtMaker {
 
     private void init(File ngtName) throws Exception {
         br = new BufferedReader(new FileReader(ngtName));
-        if (RunAll.configpath == "") RunAll.configpath = (new File(".")).getCanonicalPath();
+        if (RunAll.configpath == "") RunAll.configpath = (new File("./src/main/resources")).getCanonicalPath();
         trans = new Transcoder(new FileInputStream(RunAll.configpath+"/eu/himeros/resources/transcoders/low2up.txt"));
         ngtTm = new TreeMap<>();
         ngtAl = new ArrayList<>(300000);
         prolog=new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
         prolog.append("<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n");
-        prolog.append("<meta content=\"riguadon 0.3\" name=\"ocr-system\" />\n");
+        prolog.append("<meta content=\"Rigaudon 0.3\" name=\"ocr-system\" />\n");
         prolog.append("<meta name=\"ocr-nmber-of-pages\" content=\"???\" />\n");
         prolog.append("<meta name=\"ocr-langs\" content=\"grc lat\" />\n");
         prolog.append("<meta content=\"ocr_line ocr_page\" name=\"ocr-capabilities\" />\n");
@@ -97,7 +97,7 @@ public class NgtMaker {
     public void parseAll(File dir) throws Exception {
         for (File file : dir.listFiles()) {
             try{
-                if(!file.getName().matches("^.+\\.html$")) continue;
+                if(!file.getName().matches("^.+\\.1.html$")) continue;
                 parseDoc(file);
             }catch(Exception ex){
                 System.err.println(file.getName());
