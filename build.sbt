@@ -1,4 +1,5 @@
 import AssemblyKeys._
+import sbtassembly.Plugin._
 
 name := "hOCRInfoAggregator"
 
@@ -17,9 +18,21 @@ libraryDependencies ++= Seq(
     "jaxen" % "jaxen" % "1.1.3"
 ).map(_.excludeAll(
 	ExclusionRule( organization = "maven-plugins" ),
-	ExclusionRule( organization = "xerces" )
+	ExclusionRule( organization = "xerces" ),
+	ExclusionRule( organization = "xalan" )
 ))
 
 resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
 assemblySettings
+
+mainClass in assembly := Some("eu.himeros.hocr.RunAll")
+
+test in assembly := {}
+
+mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
+  {
+	case PathList("org","w3c","dom", xs @ _*) => MergeStrategy.first
+	case x => old(x)
+  }
+}
