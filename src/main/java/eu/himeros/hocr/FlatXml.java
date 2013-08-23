@@ -55,17 +55,17 @@ public class FlatXml {
         title.addContent("ocr");
         if(head!=null) head.addContent(title);
         Element body=root.getChild("body",xmlns);
-        Element oldPage;
+        /*Element oldPage;
         try{
             oldPage=body.getChild("div",xmlns);
         }catch(Exception ex){
             oldPage=new Element("div",xmlns);
-        }
+        }*/
         Element page=new Element("div",xmlns);
         page.setAttribute("class","ocr_page");
         page.setAttribute("id","i"+inFile.getName().substring(1).replace(".html",".png"));
-        XPathExpression<Element> xpath = XPathFactory.instance().compile("//ns:div[@class='ocr_carea']", Filters.element(), null, Namespace.getNamespace("ns", "http://www.w3.org/1999/xhtml"));
-        List<Element> careaElL = xpath.evaluate(oldPage);
+        XPathExpression<Element> xpath = XPathFactory.instance().compile("//*[@class='ocr_carea']", Filters.element(), null, Namespace.getNamespace("ns", "http://www.w3.org/1999/xhtml"));
+        List<Element> careaElL = xpath.evaluate(body);
         for (Element careaEl : careaElL) {
             page.addContent(new Comment("<div class=\""+careaEl.getAttributeValue("class")+"\" title=\""+careaEl.getAttributeValue("title")+"\">"));
             for(Element pEl:careaEl.getChildren()){
@@ -83,8 +83,11 @@ public class FlatXml {
             }
             page.addContent(new Comment("</div>"));
         }
-        oldPage.detach();
-        if(body!=null) body.addContent(page);
+        //oldPage.detach();
+        if(body!=null) {
+        	body.removeContent();
+        	body.addContent(page);
+        }
         XMLOutputter xmlOutputter=new XMLOutputter(Format.getPrettyFormat());
         xmlOutputter.output(doc,new BufferedWriter(new FileWriter(outFile)));
     }
