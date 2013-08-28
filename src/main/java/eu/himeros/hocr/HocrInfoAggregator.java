@@ -503,7 +503,7 @@ public class HocrInfoAggregator {
                     continue;
                 }
                 Element del = new Element("del", xmlns);
-                del.setAttribute("title", "nlp " + String.format("%.2f", score));
+                del.setAttribute("title", "nlp " + String.format("%.2f", score).replaceAll(",","."));
                 score = score - 0.01;
                 suggestion = suggestion.replaceAll(l1PunctMarkFilter, "");
                 Matcher leftMatcher = l1LeftPunctMarkPattern.matcher(ins.getText());

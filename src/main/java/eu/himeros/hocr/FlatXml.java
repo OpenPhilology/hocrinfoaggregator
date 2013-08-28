@@ -49,12 +49,17 @@ public class FlatXml {
         SAXBuilder builder=new SAXBuilder();
         Document doc=builder.build(inFile);
         Element root=doc.getRootElement();
-        Namespace xmlns = root.getNamespace();
-        Element head=root.getChild("head",xmlns);
-        Element title=new Element("title");
+        Namespace oldns = root.getNamespace();
+        Element newRoot = new Element("html","http://www.w3.org/1999/xhtml");
+        Namespace xmlns = newRoot.getNamespace();
+        Element head=root.getChild("head",oldns);
+        head.setNamespace(xmlns);
+        for (Element child:head.getChildren()) child.setNamespace(xmlns);
+        Element title=new Element("title",xmlns);
         title.addContent("ocr");
         if(head!=null) head.addContent(title);
-        Element body=root.getChild("body",xmlns);
+        Element body=root.getChild("body",oldns);
+        body.setNamespace(xmlns);
         /*Element oldPage;
         try{
             oldPage=body.getChild("div",xmlns);
@@ -72,10 +77,12 @@ public class FlatXml {
                 page.addContent(new Comment("<p>"));
                 for(Element lineEl:pEl.getChildren()){
                     lineEl.removeAttribute("id");
+                    lineEl.setNamespace(xmlns);
                     for(Element child:lineEl.getChildren()){
                         child.removeAttribute("id");
                         child.removeAttribute("lang");
                         child.removeAttribute("lang",xmlns);
+                        child.setNamespace(xmlns);
                     }
                     page.addContent(lineEl.clone());
                 }
@@ -88,6 +95,9 @@ public class FlatXml {
         	body.removeContent();
         	body.addContent(page);
         }
+        newRoot.addContent(root.removeContent());
+        doc.detachRootElement();
+        doc.setRootElement(newRoot);
         XMLOutputter xmlOutputter=new XMLOutputter(Format.getPrettyFormat());
         xmlOutputter.output(doc,new BufferedWriter(new FileWriter(outFile)));
     }
