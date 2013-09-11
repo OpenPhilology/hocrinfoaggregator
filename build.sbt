@@ -5,6 +5,8 @@ name := "hOCRInfoAggregator"
 
 version := "1.0"
 
+javacOptions ++= Seq("-encoding","UTF-8")
+
 scalaVersion := "2.10.0"
 
 mainClass := Some("eu.himeros.hocr.RunAll")
