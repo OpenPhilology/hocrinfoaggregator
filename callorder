@@ -1,0 +1,161 @@
+Runall.java
+-----------
+
+Takes path to directory 
+Puts files into Hashmap by extension
+*FlatXml(String[] book files)
+*XmlWordListExtractor(String[] xml files, String[] $filename.ngt.csv)
+*NgtMaker(String[] csv files, String[] book files)
+Runall.run(String[] book files)
+
+
+- run(String[] book files)
+	*HocrInfoAggregator
+	hocrInfoAggregator.initFile($filename.1.html)
+	hocrInfoAggregator.parse()
+	hocrInfoAggregator.alignToGroundTruth();
+	hocrInfoAggregator.output(p$filename.html)
+
+FlatXml
+-------
+
+Input book files (*.html), output *.1.html
+Injects hocr class tags (ocr_page, ocr_carea)
+
+XmlWordListExtractor
+--------------------
+
+Input xml files, output .ngt.csv (near-ground-truth "csv")
+
+Strips all non-greek characters, "de-hyphenates" by removing "- " and writes
+all words into $filename.ngt.csv
+
+NgtMaker
+--------
+
+main -> init(String[] csv files)
+	parseAll(String[] book files)
+
+- init
+	Loads low2up transcoder (low2up.txt)
+	Puts all trigrams occuring an odd number of times into $ngtTm
+
+- parseAll -> parseDoc(*.1.html)
+
+- parseDoc($filename.1.html)
+	adjustFile (writes Hocr/XML/HTML-Header/Metadata into File)
+	parseOcrWord(all spans with class 'ocr_word') (Removes non-Uppercase/non-Greek characters)
+	findAnchors() (finds last word sequence in $ngtTm, returns csv indices)
+	writeFragment() (writes $filename.ngt.xml with word sequence/fragment)
+
+HocrInfoAggregator
+------------------
+
+init()
+
+- init
+	sets UpperCaseSimEvaluator to Low2Up transcoders
+	loads Lucene spell checker
+	loads Low2up transcoders
+	loads HyphenationTree
+	loads grchs.ser, up2low-greek.ser, syllhs.ser (serialized objects)
+	
+- initFile($filename.1.html)
+	instantiate *GreekContextFilterManager
+	runs *AlignedQuotationParser.parse() on $filename.ngt.xml
+	makeNearGtHm() runs on AQP output and puts it into misc. hashmaps
+
+- parse()
+	parseOcrWord(Element span (word) in span (line))
+	updateElements()
+
+- parseOcrWord(Element ocrWord)
+	runs *GrcWordAdjuster("monotonic2polytonic")
+	runs low2upL1 transcoder and dehyphenates if needed
+	updates occurrence counter in occHm
+	annotates ocr - setClassiFicationAndScore(Token ocrWord)
+		      - setInfoSpanclass(token)
+		      - *GreekContextFilterManager.addsuitableElement/adjustPreviousSuitableElement
+
+- setClassiFicationAndScore(Token ocrWord)
+	strips punctuation
+	checks if ocrWord is: in grchs.ser (is a word), sets score to word length
+			    : in up2low-greek.ser (ocrWord matches monotonic word?), set score to 4/5 word length
+			    : valid syllabic sequence (testSyllSeq()), set score to 2/3 word length
+			    : valid character sequence (testCharSeq()), set score to 1/2 word length
+			    : is not in latin alphabet (testL2CharSeq()), set score to word length
+			    : else set classification to BADMANY/BADONE depending on word length, set score to 0
+
+- testSyllSeq(String str)
+	uses hyphenator to split word into syllables and check if contained in
+	syllhs.ser ?
+
+- setInfoSpanclass(token)
+	sets Hocr annotation class from Token classification field
+	makeSuggestions(token) 
+
+- makeSuggestions
+	if not UCWORD run spell checker to find suggestions
+	else get it from upL1Hm/up2low-greek.ser
+
+- updateElements
+	fetches all uppercase-annotated elements
+	sets occurrence counter
+	if occurrence counter == 1 mark as anchor
+	if CORRWORD or uppercase word set attribute title mapping original and
+	upper case word
+
+- alignToGroundTruth()
+	makeAlignment() runs ObjectAligner with setSimEvaluator
+
+- output(p$filename.html)
+	makeCompliantHocr()
+
+GrcWordAdjuster
+---------------
+
+Runs monotonic2polytonic or ocr2u transcoder
+
+- adjust(String[] features, String word) 
+	Runs monotonic2polytonic or/and ocr2u transcoder depending on content
+	of features
+
+AlignedQuotationParser
+----------------------
+
+- init
+	Loads beta2u transcoder
+	Loads low2up transcoder
+
+- parse(String $filename.ngt.xml)
+	rootOut = parse(Content root of xml)
+	injectOcc(rootOut)
+	appendToAnchor(rootOut) (runs twice)
+
+- parse(Content)
+	parseTextLine (filters out non-greek & dehyphenates, adds to rootOut)
+
+- injectOcc(Element rootOut)
+	Sets occ attribute to occurrence counter of word (makeOccHm())
+
+- appendToAnchor
+	removes all non-unique words
+
+GreekContextFilterManager
+-------------------------
+
+runs *GreekSuggestionInContextFilter on a 3 word window (call
+addSuitableElement/adjustPreviousSuitableElement alternatingly)
+
+- addSuitableElement(Element)
+	add new element to queue
+
+- adjustPreviousSuitableElement(Element)
+	runs *GreekSuggestionInContextFilter with window and current element suggestions
+	iff more than one suggestion: set attribute title to suggestions
+	else class = CORRWORD, title = current text, text = suggestion
+
+GreekSuggestionInContextFilter
+------------------------------
+
+does magic voodoo i don't really understand because i don't know any ancient greek
