@@ -4,7 +4,7 @@ Runall.java
 Takes path to directory 
 Puts files into Hashmap by extension
 *FlatXml(String[] book files)
-*XmlWordListExtractor(String[] xml files, String[] $filename.ngt.csv)
+*XmlWordListExtractor(String xml files, String $filename.ngt.csv)
 *NgtMaker(String[] csv files, String[] book files)
 Runall.run(String[] book files)
 
@@ -55,7 +55,7 @@ init()
 
 - init
 	sets UpperCaseSimEvaluator to Low2Up transcoders
-	loads Lucene spell checker
+	initializes *LuceneSpellChecker
 	loads Low2up transcoders
 	loads HyphenationTree
 	loads grchs.ser, up2low-greek.ser, syllhs.ser (serialized objects)
@@ -70,8 +70,8 @@ init()
 	updateElements()
 
 - parseOcrWord(Element ocrWord)
-	runs *GrcWordAdjuster("monotonic2polytonic")
-	runs low2upL1 transcoder and dehyphenates if needed
+	runs *GrcWordAdjuster("monotonic2polytonic", "ocr2u") on normalized, dehyphenated word (*GrcNormalizer)
+	runs low2upL1 transcoder
 	updates occurrence counter in occHm
 	annotates ocr - setClassiFicationAndScore(Token ocrWord)
 		      - setInfoSpanclass(token)
@@ -111,14 +111,26 @@ init()
 - output(p$filename.html)
 	makeCompliantHocr()
 
+LuceneSpellChecker
+------------------
+
+Return suggestions for misspelled words from local data
+(src/main/resources/lucene-grc).
+
 GrcWordAdjuster
 ---------------
 
-Runs monotonic2polytonic or ocr2u transcoder
+Runs monotonic2polytonic (logical) or ocr2u transcoder
 
 - adjust(String[] features, String word) 
 	Runs monotonic2polytonic or/and ocr2u transcoder depending on content
 	of features
+
+GrcNormalizer
+-------------
+
+Normalizes strings according to Normalization Form C (NFC) using polytonic
+acute accents utilizing the grc2nfcbe.nrm file.
 
 AlignedQuotationParser
 ----------------------
@@ -158,4 +170,32 @@ addSuitableElement/adjustPreviousSuitableElement alternatingly)
 GreekSuggestionInContextFilter
 ------------------------------
 
-does magic voodoo i don't really understand because i don't know any ancient greek
+Tentative!
+
+- filterSuggestions(curWord, prevWord, nextWord, ArrayList<String> suggestionAl)
+	extract non-greek suffixes/prefixes from current word (can be empty)
+	check for each suggestion if: contains an uppercase character ->
+				      convert first suggestion character to
+				      uppercase and add to result set
+				    : else continue
+
+	in same loop check if	    : there is only one suggestion ->
+				      add suggestion with non-greek
+				      prefix/suffix to result set
+				    : else check if grave/enclitic accent
+				      or iota subscript is present in
+				      suggestion and required by various filter
+				      -> remove last suggestion and substitute
+				      current one with non-greek prefix/suffix
+
+- isEncliticAccentRequired()
+	An enclitic accent is required if the next word doesn't start with an
+	accented character.
+
+- isGraveRequired()
+	A grave accent is required if the current word is not followed by a
+	punctuation mark (faulty test).
+
+- isIotaSubRequired()
+	An iota subscript is required if the current word contains an iota
+	subscript.
