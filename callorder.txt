@@ -103,15 +103,15 @@ init()
 	sets occurrence counter
 	if occurrence counter == 1 mark as anchor
 	if CORRWORD or upper case word set attribute title mapping original and
-	upper case word (original + \u261a + title)
+	suggestions (original + \u261a + suggestions)
 
 - alignToGroundTruth()
 	runs makeAlignment() on word list around an anchor 
 
 - makeAlignment() 
 	runs ObjectAligner on anchored word list and near-ground-truth list
-	compares aligned upper case words and generates \u261a mapping in title
-	attribute
+	compares aligned upper case words and generates \u261a mapping between
+	original and suggestions in title attribute
 
 - output(p$filename.html)
 	makeCompliantHocr()
