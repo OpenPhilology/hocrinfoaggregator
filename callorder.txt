@@ -44,7 +44,7 @@ main -> init(String[] csv files)
 
 - parseDoc($filename.1.html)
 	adjustFile (writes Hocr/XML/HTML-Header/Metadata into File)
-	parseOcrWord(all spans with class 'ocr_word') (Removes non-Uppercase/non-Greek characters)
+	parseOcrWord(all spans with class 'ocr_word') (Removes non-upper case/non-Greek characters)
 	findAnchors() (finds last word sequence in $ngtTm, returns csv indices)
 	writeFragment() (writes $filename.ngt.xml with word sequence/fragment)
 
@@ -75,7 +75,7 @@ init()
 	updates occurrence counter in occHm
 	annotates ocr - setClassiFicationAndScore(Token ocrWord)
 		      - setInfoSpanclass(token)
-		      - *GreekContextFilterManager.addsuitableElement/adjustPreviousSuitableElement
+		      - *GreekContextFilterManager.addsuitableElement()/adjustPreviousSuitableElement()
 
 - setClassiFicationAndScore(Token ocrWord)
 	strips punctuation
@@ -99,17 +99,32 @@ init()
 	else get it from upL1Hm/up2low-greek.ser
 
 - updateElements
-	fetches all uppercase-annotated elements
+	fetches all upper case-annotated elements
 	sets occurrence counter
 	if occurrence counter == 1 mark as anchor
-	if CORRWORD or uppercase word set attribute title mapping original and
-	upper case word
+	if CORRWORD or upper case word set attribute title mapping original and
+	upper case word (original + \u261a + title)
 
 - alignToGroundTruth()
-	makeAlignment() runs ObjectAligner with setSimEvaluator
+	runs makeAlignment() on word list around an anchor 
+
+- makeAlignment() 
+	runs ObjectAligner on anchored word list and near-ground-truth list
+	compares aligned upper case words and generates \u261a mapping in title
+	attribute
 
 - output(p$filename.html)
 	makeCompliantHocr()
+
+- makeCompliantHocr()
+	Iterates over all span elements in annotated xml tree
+	Removes all temporary attributes
+	Adds an "ins" Element with NLP score based on word class
+	Adds an "del" Element with attribute title and decreasing (0.9, delta
+	0.01) NLP score for all suggestions, if suggestion ends with \u261a
+	calculate similarity and add \u261b and nlp score of 0.70 if
+	sufficiently similar (score > 0.6)
+
 
 LuceneSpellChecker
 ------------------
@@ -174,9 +189,9 @@ Tentative!
 
 - filterSuggestions(curWord, prevWord, nextWord, ArrayList<String> suggestionAl)
 	extract non-greek suffixes/prefixes from current word (can be empty)
-	check for each suggestion if: contains an uppercase character ->
+	check for each suggestion if: contains an upper case character ->
 				      convert first suggestion character to
-				      uppercase and add to result set
+				      upper case and add to result set
 				    : else continue
 
 	in same loop check if	    : there is only one suggestion ->
@@ -189,8 +204,8 @@ Tentative!
 				      current one with non-greek prefix/suffix
 
 - isEncliticAccentRequired()
-	An enclitic accent is required if the next word doesn't start with an
-	accented character.
+	An enclitic accent is required if the following word doesn't have any
+	diacritics.
 
 - isGraveRequired()
 	A grave accent is required if the current word is not followed by a
