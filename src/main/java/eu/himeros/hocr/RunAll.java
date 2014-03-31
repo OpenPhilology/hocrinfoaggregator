@@ -43,7 +43,7 @@ public class RunAll {
         for (File file : listFiles) {
             try {
                 if (file.getName().endsWith(".1.html") && !file.getName().endsWith(".ngt.html")) {
-                    System.out.println(file.getAbsolutePath());
+                    System.out.println("RunAll: " + file.getAbsolutePath());
                     hocrInfoAggregator.initFile(file.getAbsolutePath());
                     hocrInfoAggregator.parse();
                     try {
@@ -89,6 +89,14 @@ public class RunAll {
              try {
              FlatXml.main(new String[]{filenames.get("book")});
              XmlWordListExtractor.main(new String[]{filenames.get("xml"),filenames.get("xml").replaceAll("\\.xml", "\\.ngt\\.csv")});
+	     dir = new File(args[1]);
+	     files = dir.listFiles();
+             filenames = new HashMap<>();
+             for (File f : files) {
+            	 String filename = f.getAbsolutePath();
+            	 String[] extension = filename.split("\\.");
+            	 filenames.put(extension[extension.length-1], filename);
+             }
              NgtMaker.main(new String[]{filenames.get("csv"),filenames.get("book")});
              } catch (Exception e) {
             	 // solving problems by ignoring them
