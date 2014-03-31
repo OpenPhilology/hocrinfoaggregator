@@ -3,6 +3,46 @@ hocrinfoaggregator
 
 HocrInfoAggregator
 
+Overview
+--------
+
+hocrInfoAggregator's algorithm operates roughly as follows:
+
+1. Create Near-Ground-Truth files from alternative text source
+2. Dehyphenates tokens, sets classification and score depending on word type
+3. Finds alternative suggestions using a spell checker
+4. Rules out suggestions based on properties of polytonic greek
+5. Finds single occurrence tokens
+6. Aligns working copy with ground truth around single-occurrence tokens
+7. If upper case token do not match creating mapping between ngt and
+   suggestions
+8. Write hOCR containing nlp scores depending on token type. Also add nlp
+   scores for possible substitutions.
+
+Building
+--------
+
+$ sbt assembly
+
+You'll find a jar under target/scala-2.10/. The sbt build utility can be
+retrieved from http://scala-sbt.org.
+
+Running
+-------
+
+Add the jar to the class path and run:
+
+$ java eu.himeros.hocr.RunAll src/main/resources $hocr_files
+
+hocrinfoaggregator expects at least a directory containing a .book subdirectory
+with hOCR files. The subdirectory must be named
+<Author_Name>-<Work_Title>.book. The hOCR files themselves are named
+pNNNN.html. It is also possible to supply another version of the same text as a
+single XML file in the .book directory. Greek text will be extracted from this
+file without regard to annotation.
+The final output can be found under
+$hocr_file/<Author_Name>-<Work_Title>.book/pNNNN.1.html.
+
 Directories
 -----------
 
@@ -33,7 +73,7 @@ Directories
 
 * src/main/resources/hyph
 
-  polytonic greek hyphenation patterns for Apache FOP based on LaTeX (binary and xml)
+  Polytonic greek hyphenation patterns for Apache FOP based on LaTeX (binary and xml)
 
 * src/main/resources/lucene-grc
   
